@@ -92,10 +92,18 @@ Receiving text
 There's a textbox on the top right of the screen. Whenever enter is pressed,
 the text in that textbox is sent.
 ---------------------------------------------------------------------------*/
+local collectedText = "" -- Text is not always sent in one datagram
 messages[MsgTypes.TEXT] = function(buffer, socket)
-	local _, text = buffer:ReadString()
+	local size = buffer:Size()
+	for i = 1, size - 1, 1 do
+		local _, text = buffer:Read(1)
+		collectedText = collectedText .. text
 
-	hook.Call("AndroidText", nil, text)
+		if text == "\n" then
+			hook.Call("AndroidText", nil, collectedText)
+			collectedText = ""
+		end
+	end
 end
 
 /*---------------------------------------------------------------------------
