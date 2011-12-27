@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hello">Enter local IP address to connect to:</string>
+    <string name="app_name">GMod control</string>
+    <string name="ThisIP">192.168.1.</string>
+    <string name="ConnectLocal">Connect</string>
+    <string name="txtInputText">Input text:</string>
+    <string name="controlText">Control Garry\'s mod from here!</string>
+    <string name="btn1">1</string>
+    <string name="btn2">2</string>
+    <string name="btn3">3</string>
+    <string name="btn4">4</string>
+    <string name="btn5">5</string>
+    <string name="btn6">6</string>
+    <string name="Empty"></string>
+    <string name="SendAcceleration">Send acceleration data (slower with low in-game fps)</string>
+    <string name="sendText">type here</string>
+
+</resources>
