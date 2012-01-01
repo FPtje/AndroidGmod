@@ -34,7 +34,8 @@ public class GCPprotocol {
 		ORIENTATION (2),
 		ACCELERATION (3),
 		BUTTON (4),
-		TEXT (5);
+		TEXT (5),
+		FINGERMOVEMENT (6);
 		
 		public final int Code;
 		MsgTypes(int c){
@@ -191,7 +192,40 @@ public class GCPprotocol {
 				connection.send(p);
 			}
 		} catch (IOException e) {
-			return; // Don't throw an error. That would only annoy the user.
+			// Don't throw an error. That would only annoy the user.
+		}
+	}
+	
+	/**
+	 * sendFingerMovement
+	 * Sends a finger movement event holding the new finger position
+	 * @param x x of the new position
+	 * @param y y of the new position
+	 */
+	private long lastSendFinger = 0; // Make sure it doesn't send the finger movement too often
+	private float[] lastXY = new float[2];
+	public void SendFingerMovement(float x, float y){
+		final long sendDelay = 50;
+		
+		if (System.currentTimeMillis() - lastSendFinger < sendDelay || (lastXY[0] == x && lastXY[1] == y))
+			return; // Simply disregard data when the same data or when it's sending too fast
+		
+		lastSendFinger = System.currentTimeMillis();
+		lastXY[0] = x;
+		lastXY[1] = y;
+		
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		DataOutputStream dos = new DataOutputStream(bos);
+		
+		try {
+			dos.writeByte(MsgTypes.FINGERMOVEMENT.Code);
+			dos.writeFloat(x);
+			dos.writeFloat(y);
+			
+			byte[] data = bos.toByteArray();
+			DatagramPacket p = new DatagramPacket(data, data.length);
+			connection.send(p);
+		} catch (IOException e) {
 		}
 	}
 }

@@ -12,7 +12,8 @@ local MsgTypes = {
 	ORIENTATION = 2, -- Orienation (rotation) data
 	ACCELERATION = 3, -- Acceleration (movement) data
 	BUTTON = 4, -- Button presses and releases
-	TEXT = 5 -- The text entered in the textbox on the top right
+	TEXT = 5, -- The text entered in the textbox on the top right
+	FINGERMOVEMENT = 6 -- Moving the finger over the screen
 }
 
 local messages = {}
@@ -104,6 +105,18 @@ messages[MsgTypes.TEXT] = function(buffer, socket)
 			collectedText = ""
 		end
 	end
+end
+
+/*---------------------------------------------------------------------------
+Finger movement
+When you move your finger over the screen, it registers its movement.
+The x and y coordinates of the new finger position are sent to GMod.
+---------------------------------------------------------------------------*/
+messages[MsgTypes.FINGERMOVEMENT] = function(buffer, socket)
+	local _, x = buffer:ReadFloat(true)
+	local _, y = buffer:ReadFloat(true)
+
+	hook.Call("AndroidFingerMovement", nil, x, y)
 end
 
 /*---------------------------------------------------------------------------

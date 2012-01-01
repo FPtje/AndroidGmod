@@ -250,6 +250,8 @@ public class ControlActivity extends Activity implements SensorEventListener {
 	    		gcp.SendButton(buttonNr, 0);
 	    	else if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_POINTER_UP)
 	    		gcp.SendButton(buttonNr, 1);
+	    	else if (action == MotionEvent.ACTION_MOVE)
+	    		gcp.SendFingerMovement(me.getX(), me.getY());
 	    	
 			return true;
 	    }
