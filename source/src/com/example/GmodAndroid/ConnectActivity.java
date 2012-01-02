@@ -91,12 +91,12 @@ public class ConnectActivity extends Activity {
      * @see android.app.Activity#onActivityResult(int, int, android.content.Intent)
      */
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent controlIntend){
-    	super.onActivityResult(requestCode, resultCode, controlIntend);
+    protected void onActivityResult(int requestCode, int resultCode, Intent controlIntent){
+    	super.onActivityResult(requestCode, resultCode, controlIntent);
     	
     	if (resultCode == RESULT_FIRST_USER + 1){ // RESULT_FIRST_USER + 1 means a connection error
     		TextView text = (TextView) findViewById(R.id.txtStatus);
-        	text.setText(controlIntend.getStringExtra("Status"));
+        	text.setText(controlIntent.getStringExtra("Status"));
     	}
     }
 
@@ -118,4 +118,6 @@ public class ConnectActivity extends Activity {
     	editor.putString("LastIP", ipTextEntry.getText().toString());
     	editor.commit();
     }
+    
+    
 }

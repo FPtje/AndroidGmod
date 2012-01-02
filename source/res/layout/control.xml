@@ -89,16 +89,17 @@
         android:layout_alignParentTop="true"
         android:scaleType="fitXY"
         android:visibility="visible" />
+
     <EditText
         android:id="@+id/txtSend"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@+id/btnMicrophone"
         android:layout_toRightOf="@+id/txtControl"
         android:height="20dp"
-        android:singleLine="true"
         android:onClick="txtSendClick"
+        android:singleLine="true"
         android:text="@string/sendText" />
 
     <TextView
@@ -109,5 +110,15 @@
         android:layout_alignBottom="@+id/txtSend"
         android:layout_alignParentLeft="true"
         android:text="@string/controlText" />
+
+    <ImageButton
+        android:id="@+id/btnMicrophone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:onClick="btnMicrophoneClick"
+        android:longClickable="true"
+        android:src="@android:drawable/ic_btn_speak_now" />
 
 </RelativeLayout>

@@ -1,5 +1,7 @@
 package com.example.GmodAndroid;
 
+import java.util.ArrayList;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.hardware.Sensor;
@@ -8,12 +10,15 @@ import android.hardware.SensorManager;
 import android.hardware.SensorEvent;
 import android.os.Bundle;
 import android.os.PowerManager;
+import android.speech.RecognizerIntent;
 import android.text.Editable;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnLongClickListener;
 import android.view.View.OnTouchListener;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
@@ -82,6 +87,9 @@ public class ControlActivity extends Activity implements SensorEventListener {
         // Setup EditText
         EditText txtSend = (EditText) findViewById(R.id.txtSend);
         txtSend.setOnEditorActionListener(txtSendEnter); // See below for definition txtSendEnter
+        
+        ImageButton micButton = (ImageButton) findViewById(R.id.btnMicrophone);
+        micButton.setOnLongClickListener(micLongClick);
     }
 	
 	/*	onResume
@@ -267,6 +275,10 @@ public class ControlActivity extends Activity implements SensorEventListener {
 		txtSend.getEditableText().clear();
 	}
 	
+	/**
+	 * txtSendEnter
+	 * When you press enter in the TextView
+	 */
 	private OnEditorActionListener txtSendEnter = new OnEditorActionListener() {
 		public boolean onEditorAction(TextView txtSend, int actionId, KeyEvent event) {
 			Editable txt =txtSend.getEditableText(); 
@@ -275,4 +287,54 @@ public class ControlActivity extends Activity implements SensorEventListener {
 			return false;
 		}
 	};
+	
+	/**
+	 * Called when you click the microphone button
+	 * @param v the microphone button
+	 */
+	public void btnMicrophoneClick(View v){
+		openVoiceDialog(RESULT_FIRST_USER);
+	}
+	
+	/**
+	 * Called when you press and hold the microphone button
+	 * This will loop the voice command thing until you press back
+	 */
+	private OnLongClickListener micLongClick = new OnLongClickListener(){
+		public boolean onLongClick(View v) {
+			openVoiceDialog(RESULT_FIRST_USER + 1);// Different request code to make it loop
+			return false;
+		}
+	};
+	
+	/**
+	 * openVoiceDialog
+	 * Open the voice recognition dialog
+	 * @param requestcode the code that the dialog is opened with.
+	 */
+	private void openVoiceDialog(int requestcode){
+		Intent speech = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+		speech.putExtra(RecognizerIntent.EXTRA_PROMPT, "GMod voice commands"); // Text in the voice box
+		speech.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM); // type of voice commands
+		speech.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 5);
+		this.startActivityForResult(speech, requestcode);
+	}
+	
+	/**
+	 * onActivityResult
+	 * when I get the voice data
+	 */
+	@Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (resultCode != 0){
+			ArrayList<String> matches = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+			gcp.SendText(matches.get(0));
+			
+			if (requestCode == RESULT_FIRST_USER + 1)
+				openVoiceDialog(requestCode);
+		}
+		
+		
+		super.onActivityResult(requestCode, resultCode, data);
+	}
 }

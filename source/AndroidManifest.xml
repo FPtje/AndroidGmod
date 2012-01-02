@@ -22,12 +22,9 @@
         </activity>
         <activity 
             android:name=".ControlActivity" 
-            android:excludeFromRecents="true" 
-            android:stateNotNeeded="true" 
-            android:noHistory="true" 
             android:launchMode="standard"
             android:screenOrientation="portrait"
-            >
+            android:label="@string/app_name">
         </activity>
     </application>
 </manifest>
