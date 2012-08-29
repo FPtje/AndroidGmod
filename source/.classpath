@@ -4,5 +4,7 @@
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
+	<classpathentry kind="lib" path="libs/libspen21.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/Android/android-sdk/extras/android/support/v13/android-support-v13.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

@@ -13,18 +13,18 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="@string/hello" />
-
+
     <EditText
         android:id="@+id/txtIP"
-        android:layout_width="match_parent"
+        android:layout_width="181dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="22dp"
         android:inputType="phone"
         android:text="@string/ThisIP" />
-
+
     <Button
         android:id="@+id/btnConnect"
-        android:layout_width="match_parent"
+        android:layout_width="181dp"
         android:layout_height="wrap_content"
         android:onClick="DoConnect"
         android:text="@string/ConnectLocal" />

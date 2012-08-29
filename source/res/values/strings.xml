@@ -5,7 +5,6 @@
     <string name="app_name">GMod control</string>
     <string name="ThisIP">192.168.1.</string>
     <string name="ConnectLocal">Connect</string>
-    <string name="txtInputText">Input text:</string>
     <string name="controlText">Control Garry\'s mod!</string>
     <string name="btn1">1</string>
     <string name="btn2">2</string>
@@ -13,8 +12,16 @@
     <string name="btn4">4</string>
     <string name="btn5">5</string>
     <string name="btn6">6</string>
+    <string name="btn7">7</string>
+    <string name="btn8">8</string>
+    <string name="btn9">9</string>
+    <string name="btn10">10</string>
+    <string name="btn11">11</string>
+    <string name="btn12">12</string>
+
     <string name="Empty"></string>
     <string name="SendAcceleration">Send acceleration data (slower with low in-game fps)</string>
     <string name="sendText">type here</string>
+    <string name="SendText">\@+id/txtControl</string>
 
 </resources>

@@ -1,22 +1,26 @@
 package com.example.GmodAndroid;
 
 import java.util.ArrayList;
-
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.hardware.SensorEvent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.speech.RecognizerIntent;
 import android.text.Editable;
+import android.util.FloatMath;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnHoverListener;
 import android.view.View.OnLongClickListener;
 import android.view.View.OnTouchListener;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -39,11 +43,12 @@ public class ControlActivity extends Activity implements SensorEventListener {
 	 */
 	private void doConnect(String ip, int port){
 		try{
-			gcp = new GCPprotocol();
+			gcp = new GCPprotocol(this);
 			gcp.DoConnect(ConnectActivity.resolveIP(ip));
+			gcp.Handshake();
 		}catch(Exception E){
 			Intent I = new Intent();
-			I.putExtra("Status", "Connection failed: "+E.getMessage());// Send status data to parent app
+			I.putExtra("Status", "Connection failed: " + E.getMessage());// Send status data to parent app
 			setResult(RESULT_FIRST_USER + 1, I);
 			finish();
 		}
@@ -54,6 +59,7 @@ public class ControlActivity extends Activity implements SensorEventListener {
 	 * (non-Javadoc)
 	 * @see android.app.Activity#onCreate(android.os.Bundle)
 	 */
+	@SuppressLint("NewApi")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,7 +73,8 @@ public class ControlActivity extends Activity implements SensorEventListener {
         
         // Setup sensor:
         sensorMGR = (SensorManager)getSystemService(SENSOR_SERVICE);
-        Sensor orientation = sensorMGR.getDefaultSensor(Sensor.TYPE_ORIENTATION);
+        @SuppressWarnings("deprecation")
+		Sensor orientation = sensorMGR.getDefaultSensor(Sensor.TYPE_ORIENTATION);
         Sensor acceleration = sensorMGR.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         
         try{
@@ -83,6 +90,8 @@ public class ControlActivity extends Activity implements SensorEventListener {
         // setup buttons
         ImageView touch = (ImageView) findViewById(R.id.touchView);
         touch.setOnTouchListener(onTouch);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+        	touch.setOnHoverListener((OnHoverListener) onHover());
         
         // Setup EditText
         EditText txtSend = (EditText) findViewById(R.id.txtSend);
@@ -164,6 +173,7 @@ public class ControlActivity extends Activity implements SensorEventListener {
 	 * (non-Javadoc)
 	 * @see android.hardware.SensorEventListener#onSensorChanged(android.hardware.SensorEvent)
 	 */
+	@SuppressWarnings("deprecation")
 	public void onSensorChanged(SensorEvent event) {
 		if (event.sensor.getType() == Sensor.TYPE_ORIENTATION){
 			// Check for changes in the rounded angle since last iteration
@@ -211,7 +221,6 @@ public class ControlActivity extends Activity implements SensorEventListener {
 	 */
 	@Override
 	public void onStop(){
-		gcp.Close();
 		setResult(RESULT_FIRST_USER); // Set result to an OK value
 		sensorMGR.unregisterListener(this); // stop the sensors from listening
 		wakeLock.release(); // Release the wake lock and re-enable the phone's sleep function.
@@ -226,23 +235,24 @@ public class ControlActivity extends Activity implements SensorEventListener {
 	private int buttonUnderLocation(View v, float x, float y){
 		float width = v.getWidth();
 		float height = v.getHeight();
+
+		Button button = (Button) findViewById(R.id.button12);
 		
-		if (x < width / 2){
-			if (y < height / 3)
-				return 1;
-			else if (y < height * (2.0/3))
-				return 3;
-			else
-				return 5;
-		}else {
-			if (y < height / 3)
-				return 2;
-			else if (y < height * (2.0/3))
-				return 4;
-			else
-				return 6;
+		int amountButtonsX = 3; // amount of buttons per row
+		int amountButtonsY = 4; // buttons per columb
+		
+		
+		if (button == null){ // Hacky way to find phone layout
+			amountButtonsX = 2;
+			amountButtonsY = 3;
 		}
+		
+		int btnX = (int) Math.max(1, FloatMath.ceil(x / width * amountButtonsX));
+		int btnY = (int) FloatMath.floor(y / height * amountButtonsY);
+		
+		return btnY * amountButtonsX + btnX;
 	}
+	
 	/**
 	 * onButtonTouch
 	 * Called when a "button" is touched
@@ -254,16 +264,51 @@ public class ControlActivity extends Activity implements SensorEventListener {
 	    	int action = me.getActionMasked();
 	    	int buttonNr = buttonUnderLocation(v, me.getX(me.getActionIndex()), me.getY(me.getActionIndex()));
 	    	
-	    	if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN )
+	    	gcp.SendFingerMovement(me.getX(), me.getY());
+
+
+	    	if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN)
 	    		gcp.SendButton(buttonNr, 0);
 	    	else if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_POINTER_UP)
 	    		gcp.SendButton(buttonNr, 1);
-	    	else if (action == MotionEvent.ACTION_MOVE)
-	    		gcp.SendFingerMovement(me.getX(), me.getY());
-	    	
+
 			return true;
 	    }
 	};
+	
+	/**
+	 * onHover
+	 * when a pen is hovering over the screen
+	 * The method with return class "Object" is a wrapper function
+	 * The OnHoverListener does not exist in API < 15.
+	 */
+	private Object onHover(){// = 
+		
+		try{
+			return new OnHoverListener() {
+		
+				public boolean onHover(View v, MotionEvent me) {
+					int action = me.getActionMasked();
+					
+					// Always send the finger movement so we know where the stylus is hovering over the tablet
+					gcp.SendFingerMovement(me.getX(), me.getY());
+					
+					if (action == MotionEvent.ACTION_HOVER_ENTER){
+			    		gcp.SendHover(1);
+					}
+			    	else if (action == MotionEvent.ACTION_HOVER_EXIT){
+			    		gcp.SendHover(0);
+			    	}
+					
+					return false;
+				}
+			};
+		}
+		catch(Exception e){
+			return null;
+		}
+	};
+	
 	
 	/**
 	 * txtSendClick

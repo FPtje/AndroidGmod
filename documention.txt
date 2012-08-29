@@ -59,3 +59,16 @@ Hook: AndroidText
 Description: The text sent by the phone when enter is pressed in the textbox
 Parameters:
 	- String text: The text that was in the textbox before it was sent
+
+Hook: AndroidFingerMovement
+Description: Detects movement of the finger on the surface
+Parameters:
+	- x coordinate
+	- y coordinate
+
+Hook: AndroidHover
+Description: Fired when a pen input device (such as the Samsung S Pen) starts or stops hovering over the surface of the device
+The last AndroidFingerMovement call indicates the location of the hover.
+Parameters:
+	- Bool start stop
+

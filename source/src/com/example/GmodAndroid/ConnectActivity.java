@@ -1,8 +1,5 @@
 package com.example.GmodAndroid;
 
-import java.net.PortUnreachableException;
-import java.net.SocketTimeoutException;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -54,25 +51,6 @@ public class ConnectActivity extends Activity {
     	
     	TextView text = (TextView) findViewById(R.id.txtStatus);
     	text.setText("Attempting to connect");
-    	try{// Check to see if the host is alive before opening the next screen
-    		byte[] IP = ConnectActivity.resolveIP(ipEntry.getText().toString());
-    		GCPprotocol gcp = new GCPprotocol();
-        	gcp.DoConnect(IP);
-        	gcp.Handshake();
-        	gcp.Close();
-    	}catch(SocketTimeoutException E){
-    		text.setText("Garry's mod could not be reached.");
-    		return;
-    	}catch(NumberFormatException E){
-    		text.setText("Please enter a correct IP address");
-    		return;
-    	}catch(PortUnreachableException E){
-    		text.setText("The android server is not running! enter Android_clCreateServer or Android_srvCreateServer in GMod's console to create one!");
-    		return;
-    	}catch(Exception E){
-    		text.setText(E.getMessage());
-    		return;
-    	}
     	
     	text.setText("");
     	CheckBox chk = (CheckBox) findViewById(R.id.chkSendAcceleration);

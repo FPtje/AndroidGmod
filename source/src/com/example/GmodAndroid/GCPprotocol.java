@@ -7,12 +7,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.SocketException;
-import java.net.UnknownHostException;
+
+import android.app.Activity;
 
 /**
  * @author falco
@@ -20,8 +17,18 @@ import java.net.UnknownHostException;
  * The implementation of the application layer protocol called GCP.
  */
 public class GCPprotocol {
-	private DatagramSocket connection;
-	private final int port = 54325;
+	
+	private Connect connection;
+	private Thread connectionThread;
+	private Activity activity;
+	
+	/**
+	 * Constructor
+	 * @param a
+	 */
+	public GCPprotocol(Activity activity){
+		this.activity = activity;
+	}
 	
 	/**
 	 * MsgTypes
@@ -35,7 +42,8 @@ public class GCPprotocol {
 		ACCELERATION (3),
 		BUTTON (4),
 		TEXT (5),
-		FINGERMOVEMENT (6);
+		FINGERMOVEMENT (6),
+		HOVER (7);
 		
 		public final int Code;
 		MsgTypes(int c){
@@ -48,13 +56,12 @@ public class GCPprotocol {
 	 * Connect to the remote host
 	 * Errors are to be handled by the caller
 	 * @param IP 
-	 * @throws SocketException
-	 * @throws UnknownHostException
 	 */
-	public void DoConnect(byte[] IP) throws SocketException, UnknownHostException{
-		InetSocketAddress address = new InetSocketAddress(Inet4Address.getByAddress(IP), port);
-		connection = new DatagramSocket();
-		connection.connect(address);
+	public void DoConnect(byte[] IP){
+		connection = new Connect(IP, activity);
+		
+		connectionThread = new Thread(connection);
+		connectionThread.start();
 	}
 	
 	/**
@@ -67,8 +74,7 @@ public class GCPprotocol {
 	 * @throws SocketException
 	 * @throws IOException
 	 */
-	public InetAddress Handshake(int timeout, DatagramSocket sock) throws SocketException, IOException{
-		if (sock == null) throw new SocketException("Socket does not exist");
+	public void Handshake(int timeout) throws IOException{
 		
 		ByteArrayOutputStream bos = new ByteArrayOutputStream(1 + 4 * 3); // Type code and 3 floats
 		DataOutputStream dos = new DataOutputStream(bos);
@@ -77,16 +83,16 @@ public class GCPprotocol {
 		byte[] data = bos.toByteArray();
 		
 		DatagramPacket p = new DatagramPacket(data, 1);
-		sock.send(p);
+		connection.setHandshake(p);
 		
-		//
-		//listen.bind(new InetSocketAddress(sock.getLocalAddress(), sock.getLocalPort())); // listen for reply
-		sock.setSoTimeout(timeout);
-		byte[] ackbyte = new byte[1];
-		DatagramPacket ack = new DatagramPacket(ackbyte, 1);
-		
-		sock.receive(ack);
-		return ack.getAddress();
+		// Wait for the previous thread to end, so we don't run two connection threads at once
+		try {
+			connectionThread.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		connectionThread = new Thread(connection);
+		connectionThread.start();
 	}
 	
 	/**
@@ -94,16 +100,23 @@ public class GCPprotocol {
 	 * @throws SocketException
 	 * @throws IOException
 	 */
-	public void Handshake() throws SocketException, IOException{
-		Handshake(500, connection);
+	public void Handshake() throws IOException{
+		Handshake(500);
 	}
-	
+
 	/**
-	 * Close the connection
+	 * Send a packet to Garry's mod
+	 * @param packet the packet to send
 	 */
-	public void Close(){
-		connection.disconnect();
-		connection.close();
+	private void sendData(DatagramPacket packet){
+		connection.setDataToSend(packet);
+		try {
+			connectionThread.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		connectionThread = new Thread(connection);
+		connectionThread.start();
 	}
 	
 	/**
@@ -124,7 +137,7 @@ public class GCPprotocol {
 			byte[] data = bos.toByteArray();
 			
 			DatagramPacket p = new DatagramPacket(data, data.length);
-			connection.send(p);
+			sendData(p);
 		}catch(IOException ioe){
 			// This UDP packet is lost.
 		}
@@ -164,7 +177,29 @@ public class GCPprotocol {
 			
 			byte[] data = bos.toByteArray();
 			DatagramPacket p = new DatagramPacket(data, data.length);
-			connection.send(p);
+			
+			Thread.sleep(10); // Otherwise not all packets get sent
+			sendData(p);
+		}catch(Exception E){
+			// Lost package
+		}
+	}
+	
+	/**
+	 * Send data about hovering
+	 * @param pressed 1 when the stylus starts hovering, 0 when it stops hovering
+	 */
+	public void SendHover(int pressed){
+		try{
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			DataOutputStream dos = new DataOutputStream(bos);
+			dos.writeByte(MsgTypes.HOVER.Code);
+			dos.writeBoolean(pressed == 1?true:false);
+			
+			byte[] data = bos.toByteArray();
+			DatagramPacket p = new DatagramPacket(data, data.length);
+			Thread.sleep(10); // Otherwise not all packets get sent
+			sendData(p);
 		}catch(Exception E){
 			// Lost package
 		}
@@ -189,7 +224,7 @@ public class GCPprotocol {
 				
 				byte[] data = bos.toByteArray();
 				DatagramPacket p = new DatagramPacket(data, data.length);
-				connection.send(p);
+				sendData(p);
 			}
 		} catch (IOException e) {
 			// Don't throw an error. That would only annoy the user.
@@ -224,7 +259,7 @@ public class GCPprotocol {
 			
 			byte[] data = bos.toByteArray();
 			DatagramPacket p = new DatagramPacket(data, data.length);
-			connection.send(p);
+			sendData(p);
 		} catch (IOException e) {
 		}
 	}

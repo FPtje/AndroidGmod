@@ -13,7 +13,8 @@ local MsgTypes = {
 	ACCELERATION = 3, -- Acceleration (movement) data
 	BUTTON = 4, -- Button presses and releases
 	TEXT = 5, -- The text entered in the textbox on the top right
-	FINGERMOVEMENT = 6 -- Moving the finger over the screen
+	FINGERMOVEMENT = 6, -- Moving the finger over the screen
+	HOVER = 7 -- Hovering a pen over the device
 }
 
 local messages = {}
@@ -117,6 +118,17 @@ messages[MsgTypes.FINGERMOVEMENT] = function(buffer, socket)
 	local _, y = buffer:ReadFloat(true)
 
 	hook.Call("AndroidFingerMovement", nil, x, y)
+end
+
+/*---------------------------------------------------------------------------
+Hovering
+When a pen hovers over a surface without touching it, this hook is called
+---------------------------------------------------------------------------*/
+messages[MsgTypes.HOVER] = function(buffer, socket)
+	local _, pressedByte = buffer:ReadByte()
+	local down = pressedByte == 1 and true or false
+
+	hook.Call("AndroidHover", nil, down)
 end
 
 /*---------------------------------------------------------------------------

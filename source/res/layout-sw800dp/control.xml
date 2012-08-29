@@ -34,6 +34,13 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:text="@string/btn2" />
+            
+            <Button
+                android:id="@+id/button3"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="@string/btn3" />
         </TableRow>
 
         <TableRow
@@ -43,18 +50,25 @@
             android:layout_weight="1" >
 
             <Button
-                android:id="@+id/button3"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="@string/btn3" />
-
-            <Button
                 android:id="@+id/button4"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:text="@string/btn4" />
+
+            <Button
+                android:id="@+id/button5"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="@string/btn5" />
+            
+            <Button
+                android:id="@+id/button6"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="@string/btn6" />
         </TableRow>
 
         <TableRow
@@ -64,18 +78,53 @@
             android:layout_weight="1" >
 
             <Button
-                android:id="@+id/button5"
+                android:id="@+id/button7"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="@string/btn5" />
+                android:text="@string/btn7" />
 
             <Button
-                android:id="@+id/button6"
+                android:id="@+id/button8"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="@string/btn6" />
+                android:text="@string/btn8" />
+            
+            <Button
+                android:id="@+id/button9"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="@string/btn9" />
+        </TableRow>
+        
+        <TableRow
+            android:id="@+id/tableRow4"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1" >
+
+            <Button
+                android:id="@+id/button10"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="@string/btn10" />
+
+            <Button
+                android:id="@+id/button11"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="@string/btn11" />
+            
+            <Button
+                android:id="@+id/button12"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="@string/btn12" />
         </TableRow>
     </TableLayout>
 
@@ -87,8 +136,8 @@
         android:layout_alignParentTop="true"
         android:scaleType="fitXY"
         android:visibility="visible" 
-        android:contentDescription="@string/Empty"/>
-
+        android:contentDescription="@string/Empty"/>
+
     <EditText
         android:id="@+id/txtSend"
         android:layout_width="wrap_content"
@@ -97,10 +146,10 @@
         android:layout_toLeftOf="@+id/btnMicrophone"
         android:layout_toRightOf="@+id/txtControl"
         android:height="20dp"
+        android:hint="@string/sendText"
         android:onClick="txtSendClick"
         android:singleLine="true"
-        android:text="@string/sendText" 
-        android:hint="@string/sendText"/>
+        android:text="@string/sendText" />
 
     <TextView
         android:id="@+id/txtControl"
@@ -110,7 +159,10 @@
         android:layout_alignBottom="@+id/txtSend"
         android:layout_alignParentLeft="true"
         android:text="@string/controlText" />
-
+
+
+
+
     <ImageButton
         android:id="@+id/btnMicrophone"
         android:layout_width="wrap_content"
