@@ -4,7 +4,7 @@ local ScrWidth, ScrHeight = 1200, 800
 local isDrawing = false
 local isHovering = false
 
-local lastEye = Angle(0) -- the eye angles when starting the hover
+local lastEye = Angle(0, 0, 0) -- the eye angles when starting the hover
 local lastX, lastY = 0, 0
 
 /*---------------------------------------------------------------------------
@@ -31,7 +31,7 @@ hook.Add("AndroidButton", "DetectTouch", function(_, pressed)
 
 		hook.Add("CalcView", "FreezeView", freezeView)
 
-		local aimVector = LocalPlayer():GetCursorAimVector():Angle()
+		local aimVector = LocalPlayer():GetAimVector():Angle()
 		LocalPlayer():SetEyeAngles(aimVector)
 
 		RunConsoleCommand("+attack")
@@ -59,7 +59,7 @@ hook.Add("AndroidHover", "DetectHover", function(down)
 
 		lastEye = LocalPlayer():EyeAngles()
 
-		local aimVector = LocalPlayer():GetCursorAimVector():Angle()
+		local aimVector = LocalPlayer():GetAimVector():Angle()
 		LocalPlayer():SetEyeAngles(aimVector)
 		hook.Add("CalcView", "FreezeView", freezeView)
 	elseif not isDrawing then
@@ -80,7 +80,7 @@ hook.Add("AndroidFingerMovement", "PenMovement", function(x, y)
 
 	lastX, lastY = x, y
 
-	local aimVector = LocalPlayer():GetCursorAimVector():Angle()
+	local aimVector = LocalPlayer():GetAimVector():Angle()
 	if isDrawing or isHovering then
 		gui.SetMousePos(x, y)
 		LocalPlayer():SetEyeAngles(aimVector)

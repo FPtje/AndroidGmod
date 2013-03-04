@@ -10,7 +10,7 @@ Select a prop to
 ---------------------------------------------------------------------------*/
 local function selectProp(ply, cmd, args)
 	local prop = ply:GetEyeTrace().Entity
-	if ValidEntity(prop) then
+	if IsValid(prop) then
 		table.insert(entSelected, prop)
 		MsgN("Added entity "..tostring(prop))
 	end
@@ -23,7 +23,7 @@ Make the props move
 ---------------------------------------------------------------------------*/
 local function doAccelerate(direction)
 	for k,v in pairs(entSelected) do
-		if not ValidEntity(v) then entSelected[k] = nil continue end
+		if not IsValid(v) then entSelected[k] = nil continue end
 		local phys = v:GetPhysicsObject()
 
 		if not phys:IsValid() then return end

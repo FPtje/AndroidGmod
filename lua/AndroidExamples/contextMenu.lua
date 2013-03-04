@@ -4,7 +4,7 @@ local hasEverHovered = false
 local isDrawing = false
 local isHovering = false
 
-local lastEye = Angle(0) -- the eye angles when starting the hover
+local lastEye = Angle(0, 0, 0) -- the eye angles when starting the hover
 local lastX, lastY = 0, 0
 
 /*---------------------------------------------------------------------------
@@ -27,6 +27,7 @@ hook.Add("AndroidButton", "DetectFingerTouch", function(_, pressed)
 
 	if pressed then
 		gui.EnableScreenClicker(true)
+		vgui.GetWorldPanel():SetWorldClicker(true)
 		gui.SetMousePos(lastX, lastY)
 
 		if not hasEverHovered then
@@ -35,7 +36,7 @@ hook.Add("AndroidButton", "DetectFingerTouch", function(_, pressed)
 
 		hook.Add("CalcView", "FreezeView", freezeView)
 
-		local aimVector = LocalPlayer():GetCursorAimVector():Angle()
+		local aimVector = LocalPlayer():GetAimVector():Angle()
 		LocalPlayer():SetEyeAngles(aimVector)
 
 		RunConsoleCommand("+attack")
@@ -45,6 +46,7 @@ hook.Add("AndroidButton", "DetectFingerTouch", function(_, pressed)
 		if not hasEverHovered then
 			timer.Simple(1, function()
 				gui.EnableScreenClicker(false)
+				vgui.GetWorldPanel():SetWorldClicker(false)
 				LocalPlayer():SetEyeAngles(lastEye)
 				hook.Remove("CalcView", "FreezeView")
 			end)
@@ -65,13 +67,15 @@ hook.Add("AndroidHover", "DetectOptionalHover", function(down)
 		gui.EnableScreenClicker(true)
 		gui.SetMousePos(lastX, lastY)
 
+		vgui.GetWorldPanel():SetWorldClicker(true)
 		lastEye = LocalPlayer():EyeAngles()
 
-		local aimVector = LocalPlayer():GetCursorAimVector():Angle()
+		local aimVector = LocalPlayer():GetAimVector():Angle()
 		LocalPlayer():SetEyeAngles(aimVector)
 		hook.Add("CalcView", "FreezeView", freezeView)
 	elseif not isDrawing then
 		gui.EnableScreenClicker(false)
+		vgui.GetWorldPanel():SetWorldClicker(true)
 		LocalPlayer():SetEyeAngles(lastEye)
 		hook.Remove("CalcView", "FreezeView")
 	end
@@ -88,7 +92,7 @@ hook.Add("AndroidFingerMovement", "FollowFingerMovement", function(x, y)
 
 	lastX, lastY = x, y
 
-	local aimVector = LocalPlayer():GetCursorAimVector():Angle()
+	local aimVector = LocalPlayer():GetAimVector():Angle()
 	if isDrawing or isHovering then
 		gui.SetMousePos(x, y)
 		LocalPlayer():SetEyeAngles(aimVector)
