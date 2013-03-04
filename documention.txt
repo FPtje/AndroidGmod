@@ -5,7 +5,10 @@ By (FPtje) Atheos
 
 
 INSTALLATION:
-
+- INSTALL GLSOCK FROM Zeh Matt!
+	http://www.facepunch.com/showthread.php?t=1234005
+	If this link doesn't work:
+	https://code.google.com/p/mattmodules/source/browse/#svn%2Ftrunk%2Fgm_glsock%2FRelease
 - Put the folder in which this file is located in addons, so you'll have addons/Android Framework
 - Connect your Android device to your computer
 - Copy the .apk file to your Android device

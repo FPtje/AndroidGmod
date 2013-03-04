@@ -149,7 +149,7 @@ Create the server that will listen for an android phone connection.
 ---------------------------------------------------------------------------*/
 local ListenSocket
 local function CreateServer()
-	require("glsock") -- Requiring this file on top of the script causes it to malfunction
+	require("glsock2") -- Requiring this file on top of the script causes it to malfunction
 	ListenSocket = GLSock(GLSOCK_TYPE_UDP)
 	ListenSocket:Bind("", port, onBound)
 end
